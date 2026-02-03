@@ -5,9 +5,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
 
 class Config:
-    # Use root directory for DB to avoid permission issues with subdirs on some platforms
-    # Also log the path for debugging
-    db_path = os.path.join(basedir, 'phish_guard.db')
+    # Use system temp directory for DB to guarantee write permissions
+    import tempfile
+    job_id = os.environ.get('RENDER_SERVICE_ID') or 'local'
+    db_path = os.path.join(tempfile.gettempdir(), f'phish_guard_{job_id}.db')
     print(f"--> CONFIG: Database Path set to: {db_path}")
     
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
