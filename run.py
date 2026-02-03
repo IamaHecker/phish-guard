@@ -7,17 +7,23 @@ from app import db
 from app.models import User
 import os
 
-with app.app_context():
-    # Ensure instance folder exists for SQLite
-    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
-    if db_uri and db_uri.startswith('sqlite'):
-        db_path = db_uri.replace('sqlite:///', '')
-        db_dir = os.path.dirname(db_path)
-        if db_dir and not os.path.exists(db_dir):
-            os.makedirs(db_dir)
-            print(f"Created missing database directory: {db_dir}")
+# Deployment Fix: Auto-create tables and default user if they don't exist
+from app import db
+from app.models import User
+import os
+import sys
 
-    db.create_all()
+with app.app_context():
+    # Debug: Print DB URI
+    print(f"--> RUN: Active Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
+    
+    # No longer needed to create instance dir if we use root, but keeping for safety
+    # in case config changes back.
+    try:
+        db.create_all()
+    except Exception as e:
+        print(f"--> ERROR creating tables: {e}")
+
     # Ensure default admin user exists
     if not User.query.filter_by(username='admin').first():
         admin = User(username='admin', email='admin@example.com', role='admin')
