@@ -5,15 +5,23 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
 
 class Config:
-    # Use system temp directory for DB to guarantee write permissions
-    import tempfile
-    job_id = os.environ.get('RENDER_SERVICE_ID') or 'local'
-    db_path = os.path.join(tempfile.gettempdir(), f'phish_guard_{job_id}.db')
-    print(f"--> CONFIG: Database Path set to: {db_path}")
+    # Attempt 4: Use simple relative path. 
+    # This creates the file in the CWD (which is project root on Render).
+    # This avoids slash complexity with absolute paths in URIs.
+    db_name = 'phish_guard.db'
     
+    # Debug: Check if Render provided a DB URL automatically
+    env_db_url = os.environ.get('DATABASE_URL')
+    if env_db_url:
+        print(f"--> CONFIG: Found DATABASE_URL in env: {env_db_url}")
+    else:
+        print(f"--> CONFIG: No DATABASE_URL in env. Using sqlite relative path.")
+
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + db_path
+    # NOTE: We force the use of our sqlite DB for now to ensure stability, ignoring env for a moment
+    SQLALCHEMY_DATABASE_URI = f'sqlite:///{db_name}'
+    print(f"--> CONFIG: Final SQLALCHEMY_DATABASE_URI: {SQLALCHEMY_DATABASE_URI}")
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # URL Generation (Tunneling)
