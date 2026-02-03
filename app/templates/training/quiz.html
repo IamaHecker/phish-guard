@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5 quiz-container">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold mb-2">Phishing Awareness Quiz</h1>
+        <p class="text-muted">Answer these 5 questions to complete your training.</p>
+    </div>
+
+    <form action="" method="post" id="quizForm">
+        <!-- Question 1 -->
+        <div class="card mb-4">
+            <div class="card-header p-4">
+                <h5 class="mb-0">1. You receive an email from "IT Support" asking for your password to fix an account
+                    issue. What should you do?</h5>
+            </div>
+            <div class="card-body p-4">
+                <label class="quiz-option">
+                    <input type="radio" name="q1" value="wrong">
+                    Reply immediately with your password.
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q1" value="correct">
+                    Report the email and never share your password. IT will never ask for it.
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q1" value="wrong">
+                    Click the link in the email to reset it yourself.
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="card mb-4">
+            <div class="card-header p-4">
+                <h5 class="mb-0">2. Which of these is a common indicator of a phishing URL?</h5>
+            </div>
+            <div class="card-body p-4">
+                <label class="quiz-option">
+                    <input type="radio" name="q2" value="wrong">
+                    It starts with https://
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q2" value="wrong">
+                    It matches the company domain exactly.
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q2" value="correct">
+                    It uses a misspelled domain (e.g. micr0soft.com) or a generic shortener.
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="card mb-4">
+            <div class="card-header p-4">
+                <h5 class="mb-0">3. An email claims you have an "Urgent Invoice Overdue" but you don't handle finances.
+                    You should:</h5>
+            </div>
+            <div class="card-body p-4">
+                <label class="quiz-option">
+                    <input type="radio" name="q3" value="correct">
+                    Ignore it or forward to security. This is likely a "sense of urgency" trap.
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q3" value="wrong">
+                    Open the attachment to check if it's a mistake.
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q3" value="wrong">
+                    Reply and ask for more details.
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="card mb-4">
+            <div class="card-header p-4">
+                <h5 class="mb-0">4. Safe links usually start with:</h5>
+            </div>
+            <div class="card-body p-4">
+                <label class="quiz-option">
+                    <input type="radio" name="q4" value="wrong">
+                    http://
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q4" value="correct">
+                    https:// (but this doesn't guarantee safety on its own!)
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q4" value="wrong">
+                    ftp://
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="card mb-4">
+            <div class="card-header p-4">
+                <h5 class="mb-0">5. Where should you report suspicious emails?</h5>
+            </div>
+            <div class="card-body p-4">
+                <label class="quiz-option">
+                    <input type="radio" name="q5" value="wrong">
+                    Delete them and tell no one.
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q5" value="wrong">
+                    Post about it on social media.
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q5" value="correct">
+                    Use the "Report Phishing" button or email your security team.
+                </label>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg px-5">Submit Quiz</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Simple script to highlight selected options
+    document.querySelectorAll('.quiz-option').forEach(option => {
+        option.addEventListener('click', function () {
+            // Remove selected class from siblings
+            const name = this.querySelector('input').name;
+            document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+                input.parentElement.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            this.querySelector('input').checked = true;
+        });
+    });
+</script>
+{% endblock %}

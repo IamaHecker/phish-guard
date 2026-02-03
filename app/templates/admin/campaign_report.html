@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('admin.campaigns') }}" class="btn btn-outline-secondary">&larr; Back to Campaigns</a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Report: {{ campaign.name }}</h1>
+    <span class="badge bg-secondary fs-6">{{ campaign.status }}</span>
+</div>
+
+<!-- High Level Stats -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-primary h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Total Targets</h6>
+                <h2 class="text-primary">{{ stats.total }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-danger h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Clicked Phish</h6>
+                <h2 class="text-danger">{{ stats.clicked }}</h2>
+                <div class="small text-muted">{{ (stats.clicked / stats.total * 100)|round(1) if stats.total > 0 else 0
+                    }}% Click Rate</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-success h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Passed Training</h6>
+                <h2 class="text-success">{{ stats.passed }}</h2>
+                <div class="small text-muted">{{ (stats.passed / stats.total * 100)|round(1) if stats.total > 0 else 0
+                    }}% Pass Rate</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Quiz Breakdown -->
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Quiz Question Breakdown</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Attempts</th>
+                        <th>Correct</th>
+                        <th>Wrong</th>
+                        <th>Success Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q_key, data in q_stats.items() %}
+                    <tr>
+                        <td class="fw-bold">{{ q_key|upper }}</td>
+                        <td>{{ data.total }}</td>
+                        <td class="text-success">{{ data.correct }}</td>
+                        <td class="text-danger">{{ data.wrong }}</td>
+                        <td>
+                            {% if data.total > 0 %}
+                            {% set pct = (data.correct / data.total * 100)|round(1) %}
+                            <div class="d-flex align-items-center">
+                                <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 0"
+                                        data-width="{{ pct }}">
+                                    </div>
+                                </div>
+                                <span>{{ pct }}%</span>
+                            </div>
+                            {% else %}
+                            <span class="text-muted">No data</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="alert alert-info mt-3 mb-0">
+            <i class="bi bi-info-circle me-2"></i>
+            This data shows which questions users struggled with. Use this to refine future training templates.
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.progress-bar[data-width]').forEach(function (bar) {
+            bar.style.width = bar.getAttribute('data-width') + '%';
+        });
+    });
+</script>
+{% endblock %}

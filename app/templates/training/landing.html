@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="teachable-hero text-center mb-5">
+    <div class="container">
+        <div class="teachable-icon mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                <path
+                    d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+            </svg>
+        </div>
+        <h1 class="display-5 fw-bold text-white mb-3">You clicked a phishing link!</h1>
+        <p class="lead text-muted mb-4 mx-auto" style="max-width: 600px;">
+            Don't worry, this was just a simulation sent by your security team.
+            However, if this had been a real attack, your credentials or device could have been compromised.
+        </p>
+        <a href="{{ url_for('training.quiz', token=token) }}" class="btn btn-primary btn-lg px-5">Take Safety
+            Quiz</a>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <h2 class="text-center fw-bold mb-5">How to Spot a Phish</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 red-flag-card">
+                <div class="card-body p-4">
+                    <h3 class="h5 fw-bold mb-3">Check the Sender</h3>
+                    <p class="text-muted small mb-0">
+                        Does the email address match the sender name? Be wary of generic domains like gmail.com for
+                        business emails, or subtle misspellings (e.g., @c0mpany.com).
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 red-flag-card">
+                <div class="card-body p-4">
+                    <h3 class="h5 fw-bold mb-3">Beware of Urgency</h3>
+                    <p class="text-muted small mb-0">
+                        Phishers often try to make you panic. phrases like "Immediate Action Required" or "Your account
+                        will be suspended" are common tactics to bypass your critical thinking.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 red-flag-card">
+                <div class="card-body p-4">
+                    <h3 class="h5 fw-bold mb-3">Inspect Links</h3>
+                    <p class="text-muted small mb-0">
+                        Hover over links before clicking. Does the URL look strange? Is it going to a website you don't
+                        recognize? When in doubt, don't click.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ title or 'Create Template' }}</h1>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.subject.label(class="form-label") }}
+                        {{ form.subject(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.body.label(class="form-label") }}
+                        {{ form.body(class="form-control", style="height: 150px;") }}
+                        {% for error in form.body.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                        <div class="form-text text-muted">Available placeholders: <code>{{ "{{name}}" }}</code> (User's
+                            Name), <code class="text-danger fw-bold">{{ "{{link}}" }}</code> (Phishing Link - <strong
+                                class="text-danger">REQUIRED</strong>: This will be replaced by the unique tracking URL)
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.landing_page_id.label(class="form-label") }}
+                        {{ form.landing_page_id(class="form-select") }}
+                    </div>
+                    {{ form.submit(class="btn btn-primary") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

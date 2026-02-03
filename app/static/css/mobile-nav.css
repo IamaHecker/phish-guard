@@ -1,0 +1,58 @@
+/* Mobile Nav Horizontal Scroll */
+.navbar-scroll-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE */
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    order: 2;
+    /* Ensure it drops below on mobile but can change on desktop */
+}
+
+.navbar-scroll-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+/* Ensure navbar items are inline */
+.navbar-nav.flex-row {
+    flex-direction: row !important;
+}
+
+/* Responsive query for Desktop to behave seemingly normal (though structure changed) */
+@media (min-width: 992px) {
+    .navbar-scroll-container {
+        width: auto;
+        overflow-x: visible;
+        margin-top: 0;
+        padding-bottom: 0;
+        margin-left: auto;
+        /* Push to right */
+    }
+}
+
+/* Mobile specific aesthetics */
+@media (max-width: 991px) {
+    .navbar .container {
+        flex-wrap: wrap;
+    }
+
+    .navbar-brand {
+        margin-right: auto;
+    }
+
+    /* Theme toggle stays top right */
+
+    /* Nav items padding adjustments for touch targets */
+    .nav-link {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.95rem;
+    }
+
+    /* Subtle fade on sides to indicate scroll? Optional */
+}

@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Analyst Dashboard</h1>
+    <button class="btn btn-outline-light btn-sm">Export Report</button>
+</div>
+
+
+<!-- Recommendations Section -->
+{% if recommendations %}
+<div class="mb-4">
+    {% for rec in recommendations %}
+    <div class="alert alert-{{ rec.level }} shadow-sm border-{{ rec.level }}" role="alert">
+        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> {{ rec.title }}</h5>
+        <p class="mb-0">{{ rec.text }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Stats Cards (Existing) -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card h-100 border-primary shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Total Campaigns</h6>
+                <h2 class="card-title text-primary" id="stat-total-campaigns">{{ total_campaigns }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-info shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Emails Sent</h6>
+                <h2 class="card-title text-info" id="stat-total-results">{{ total_results }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-danger shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Clicked (Risk)</h6>
+                <h2 class="card-title text-danger" id="stat-clicked-count">{{ clicked_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-success shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Passed Quiz</h6>
+                <h2 class="card-title text-success" id="stat-passed-count">{{ passed_count }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Campaign Performance Table -->
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white font-weight-bold">
+                Campaign Performance
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Campaign</th>
+                                <th>Status</th>
+                                <th>Click Rate</th>
+                                <th>Analysis</th>
+                                <th>Report</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for campaign in campaigns %}
+                            <tr>
+                                <td class="ps-4 fw-bold">{{ campaign.name }}</td>
+                                <td><span class="badge bg-secondary">{{ campaign.status }}</span></td>
+                                <td>
+                                    {% set total = campaign.results.count() %}
+                                    {% if total > 0 %}
+                                    {% set clicks = campaign.results.filter_by(clicked=True).count() %}
+                                    {% set rate = (clicks / total * 100)|round(1) %}
+                                    {% set bar_color = 'bg-danger' if rate > 10 else 'bg-success' %}
+                                    <div class="progress" style="height: 6px; width: 80px;" title="{{ rate }}%">
+                                        <div class="progress-bar {{ bar_color }}" role="progressbar"
+                                            data-width="{{ rate }}%"></div>
+                                    </div>
+                                    <small class="text-muted">{{ rate }}%</small>
+                                    {% else %}
+                                    <small class="text-muted">No Data</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if total > 0 %}
+                                    {% if rate > 15 %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> High Risk
+                                    </span>
+                                    {% elif rate > 5 %}
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning">
+                                        <i class="bi bi-exclamation-circle me-1"></i> Medium
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                                        <i class="bi bi-shield-check me-1"></i> Safe
+                                    </span>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="badge bg-secondary bg-opacity-10 text-muted">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('analyst.export_campaign', campaign_id=campaign.id) }}"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-download"></i> CSV
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- High Risk Employees -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-danger text-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 card-title text-white">High Risk Employees</h5>
+                    <form action="{{ url_for('analyst.reset_all_scores') }}" method="POST" class="d-inline-block">
+                        <button type="submit" class="btn btn-sm btn-outline-light"
+                            onclick="return confirm('WARNING: This will reset the scores for ALL employees. Are you sure?');">
+                            Clear All
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for user in high_risk_users %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                        <div>
+                            <h6 class="mb-0 fw-bold">{{ user.username }}</h6>
+                            <small class="text-muted">{{ user.email }}</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="h4 mb-0 text-danger fw-bold">{{ user.score }}</div>
+                            <small class="text-muted d-block" style="font-size: 0.7rem;">CyberScore</small>
+                            <form action="{{ url_for('analyst.reset_score', user_id=user.id) }}" method="POST"
+                                class="d-inline-block mt-2">
+                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"
+                                    onclick="return confirm('Are you sure you want to clear this user\'s simulation history?');">
+                                    <i class="bi bi-trash-fill me-1"></i> Reset
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="bi bi-shield-check display-4 mb-3 d-block text-success"></i>
+                        No high risk employees detected.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Fix for CSS Linter: Apply widths via JS to avoid inline style interpolation issues
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-width]').forEach(function (el) {
+            el.style.width = el.getAttribute('data-width');
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Poll for stats every 5 seconds
+        setInterval(function () {
+            fetch("{{ url_for('analyst.get_stats') }}")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('stat-total-campaigns').textContent = data.total_campaigns;
+                    document.getElementById('stat-total-results').textContent = data.total_results;
+                    document.getElementById('stat-opened-count').textContent = data.opened_count;
+                    document.getElementById('stat-clicked-count').textContent = data.clicked_count;
+                    document.getElementById('stat-passed-count').textContent = data.passed_count;
+                })
+                .catch(error => console.error('Error fetching stats:', error));
+        }, 5000); // 5000ms = 5 seconds
+    });
+</script>
+{% endblock %}
